@@ -17,7 +17,7 @@ function Header() {
   };
 
   return (
-    <header className="bg-slate-950 text-white w-full py-4 shadow-md border-b border-gray-700">
+    <header className="bg-slate-950 text-white w-full py-4 shadow-md border-b border-gray-700 fixed top-0">
       <div className="max-w-screen-xl mx-auto flex justify-between items-center px-8">
         <div className="flex items-center">
           <a href="/" onClick={() => handleLinkClick("Home")}>

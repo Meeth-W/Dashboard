@@ -11,6 +11,7 @@ const Assistant = () => {
         const fetchHistory = async () => {
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/api/v1/ai/get-history?username=Ghostyy&password=Secure123`);
+                if (response.data.status === false) return console.log(response.data);
                 const history = response.data;
 
                 const formattedMessages = history.map(item => ({
