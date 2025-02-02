@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import { ArrowPathIcon } from '@heroicons/react/24/outline'; // Import the arrow path icon
 
 const Assistant = () => {
     const [messages, setMessages] = useState([]);
@@ -59,7 +60,7 @@ const Assistant = () => {
         <div className="bg-slate-900 min-h-screen flex items-center justify-center">
             <div className="bg-slate-800 w-full max-w-[90%] h-3/4 p-4 rounded-lg shadow-lg flex flex-col">
                 {/* Header Section */}
-                <div className="w-full h-24 flex items-center justify-center">
+                <div className="w-full h-24 flex items-center justify-center bg-slate-700 rounded-lg shadow-lg mb-4">
                     <div className="text-center">
                         <h1 className="text-4xl font-bold text-white">AI Assistant</h1>
                     </div>
@@ -80,15 +81,16 @@ const Assistant = () => {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        className="bg-gray-700 text-white p-2 rounded-lg flex-grow"
+                        className={`bg-gray-700 text-white p-2 rounded-lg flex-grow ${isProcessing ? 'border-2 border-red-500' : ''}`} // Add red border if processing
                         placeholder="Type your message..."
+                        disabled={isProcessing}
                     />
                     <button 
                         type="submit" 
                         className={`text-white font-medium py-2 px-4 rounded-lg transition ml-2 ${isProcessing ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-500'}`} 
-                        disabled={isProcessing} // Disable button when processing
+                        disabled={isProcessing}
                     >
-                        {isProcessing ? 'Processing...' : 'Send'}
+                        {isProcessing ? <ArrowPathIcon className="h-5 w-5 animate-spin" /> : 'Send'} {/* Use Heroicon when processing */}
                     </button>
                 </form>
             </div>
