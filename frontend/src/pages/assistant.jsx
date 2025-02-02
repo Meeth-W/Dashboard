@@ -60,7 +60,7 @@ const Assistant = () => {
         <div className="bg-slate-900 min-h-screen flex items-center justify-center">
             <div className="bg-slate-800 w-full max-w-[90%] h-3/4 p-4 rounded-lg shadow-lg flex flex-col">
                 {/* Header Section */}
-                <div className="w-full h-24 flex items-center justify-center bg-slate-700 rounded-lg shadow-lg mb-4">
+                <div className="w-full h-24 flex items-center justify-center bg-slate-950 rounded-lg shadow-lg mb-4">
                     <div className="text-center">
                         <h1 className="text-4xl font-bold text-white">AI Assistant</h1>
                     </div>
