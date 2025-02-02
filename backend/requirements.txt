@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+langchain
+langchain-ollama
