@@ -57,6 +57,22 @@ def ai_interact(username: str, password: str, message: str):
     return handler.send_message(username, password, message)
 # Test Script: http://127.0.0.1:8000/api/v1/ai/interact?username=Ghostyy&password=Secure123&message=can%20you%20tell%20me%20how%20to%20create%20a%20reactvite%20project%20through%20terminal%20on%20windows    
 
+@app.get("/api/v1/ai/get-history")
+def get_history(username: str, password: str):
+    """
+    Returns the chat history of the user.
+    Args:
+        username (str): The username of the user.
+        password (str): The user's password.
+    Returns:
+        dict: A response containing the chat history.
+    """
+    status = users.verify(username, password)
+    if status["status"] == True:
+        return handler.conversations.get_history()
+    return status
+
+# Test Script: 
 
 origins = [
     "http://localhost:5173",  # Your frontend URL

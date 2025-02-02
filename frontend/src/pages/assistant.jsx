@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 
@@ -6,6 +6,26 @@ const Assistant = () => {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [isProcessing, setIsProcessing] = useState(false); 
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const response = await axios.get(`http://127.0.0.1:8000/api/v1/ai/get-history?username=Ghostyy&password=Secure123`);
+                const history = response.data;
+
+                const formattedMessages = history.map(item => ({
+                    sender: item.user === "Ghostyy" ? "user" : "bot",
+                    text: item.text
+                }));
+
+                setMessages(formattedMessages);
+            } catch (error) {
+                console.error('Error fetching history:', error);
+            }
+        };
+
+        fetchHistory();
+    }, []); 
 
     const sendMessage = async (e) => {
         e.preventDefault();
@@ -24,12 +44,12 @@ const Assistant = () => {
                 setIsProcessing(false); 
             } else {
                 setMessages((prevMessages) => [...prevMessages, botMessage]);
-                setInput('');
-                setIsProcessing(false);
+                setInput(''); 
+                setIsProcessing(false); 
             }
         } catch (error) {
             console.error('Error sending message:', error);
-            setInput(input); 
+            setInput(input);
             setIsProcessing(false); 
         }
     };
