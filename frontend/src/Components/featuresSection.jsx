@@ -35,7 +35,7 @@ const features = [
     title: 'Notes App',
     description: 'Take notes, create to-do lists, and stay organized with a minimalistic notes application.',
     icon: PencilSquareIcon,
-    link: '/'
+    link: '/notes'
   }
 ];
 

@@ -6,6 +6,7 @@ import About from './pages/about';
 import Contact from './pages/contact';
 import Profile from './pages/profile';
 import Assistant from './pages/assistant';
+import Notes from './pages/notes';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="contact" element={<Contact />} />
           <Route path="profile" element={<Profile />} />
           <Route path="assistant" element={<Assistant />} />
+          <Route path="notes" element={<Notes />} />
         </Route>
       </Routes>
     </Router>
