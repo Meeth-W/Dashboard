@@ -58,7 +58,7 @@ class HandleRequests:
             response = self.chain.invoke(input_data)
 
             self.conversations.add_dialogue(user_data['data'].get("character_name", username), f"{message}")
-            self.conversations.add_dialogue(input_data['bot_name'], f"{response}")
+            self.conversations.add_dialogue('AI', f"{response}")
 
             return {"status": True, "response": response}
         except Exception as e:
