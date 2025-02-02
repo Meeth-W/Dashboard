@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from functions.ai import HandleRequests
 from database import Users
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -57,6 +58,18 @@ def ai_interact(username: str, password: str, message: str):
 # Test Script: http://127.0.0.1:8000/api/v1/ai/interact?username=Ghostyy&password=Secure123&message=can%20you%20tell%20me%20how%20to%20create%20a%20reactvite%20project%20through%20terminal%20on%20windows    
 
 
+origins = [
+    "http://localhost:5173",  # Your frontend URL
+    "http://127.0.0.1:5173",  # Another possible frontend URL
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = origins,
+    allow_credentials = True,
+    allow_methods = ["*"],  
+    allow_headers = ["*"], 
+)
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
