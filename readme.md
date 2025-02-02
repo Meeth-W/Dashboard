@@ -58,5 +58,5 @@ A Personalised Cloud, AI Assistant & Other tools.
 
 5. **Run the backend server:**
     ```sh
-    python app.py
+    python server.py
     ```
