@@ -72,7 +72,7 @@ def get_history(username: str, password: str):
         return handler.conversations.get_history()
     return status
 
-# Test Script: 
+# Test Script: http://127.0.0.1:8000/api/v1/ai/get-history?username=Ghostyy&password=Secure123
 
 origins = [
     "http://localhost:5173",  # Your frontend URL
