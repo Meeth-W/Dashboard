@@ -5,6 +5,10 @@ import { ArrowUpTrayIcon, CpuChipIcon, FolderIcon } from '@heroicons/react/24/so
 function QuickActions() {
   const [storageUsed, setStorageUsed] = useState(34); // Example storage usage percentage
 
+  const handleRedirect = (path) => {
+    window.location.href = path;
+  };
+
   return (
     <div className="max-w-screen-lg mx-auto mt-10 p-6 bg-slate-800 rounded-lg shadow-lg text-white">
       <h2 className="text-2xl font-semibold text-center mb-6">Quick Actions</h2>
@@ -27,7 +31,10 @@ function QuickActions() {
         </div>
 
         {/* AI Assistant */}
-        <div className="flex flex-col items-center bg-slate-700 p-4 rounded-lg shadow-md hover:bg-slate-600 transition duration-300 cursor-pointer">
+        <div
+          className="flex flex-col items-center bg-slate-700 p-4 rounded-lg shadow-md hover:bg-slate-600 transition duration-300 cursor-pointer"
+          onClick={() => handleRedirect('/assistant')}
+        >
           <CpuChipIcon className="w-12 h-12 text-purple-400" />
           <p className="mt-2 text-lg">AI Assistant</p>
         </div>
