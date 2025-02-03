@@ -39,7 +39,7 @@ def delete_account(username: str, password: str):
 # Test Script: http://127.0.0.1:8000/api/v1/delete_account?username=Ghostyy&password=Secure123
 
 notes = Notes()
-@app.get('/api/v1/add_note')
+@app.get('/api/v1/notes/add')
 def add_note(username: str, password: str, title: str, content: str):
     """
     Adds a note to the user's account.
@@ -57,7 +57,7 @@ def add_note(username: str, password: str, title: str, content: str):
     return status
 # Test Script: http://
 
-@app.get('/api/v1/get_notes')
+@app.get('/api/v1/notes/fetch')
 def get_notes(username: str, password: str):
     """
     Retrieves the notes of the user.
@@ -73,7 +73,7 @@ def get_notes(username: str, password: str):
     return status
 # Test Script: http://
 
-@app.get('/api/v1/delete_note')
+@app.get('/api/v1/notes/delete')
 def delete_note(username: str, password: str, title: str):
     """
     Deletes a note from the user's account.
