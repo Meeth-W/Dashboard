@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
-import { ArrowPathIcon } from '@heroicons/react/24/outline'; // Import the arrow path icon
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 
 const Assistant = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const chatBoxRef = useRef(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -28,6 +29,12 @@ const Assistant = () => {
 
     fetchHistory();
   }, []);
+
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -56,32 +63,43 @@ const Assistant = () => {
     }
   };
 
+  const clearChat = async () => {
+    if (window.confirm("Are you sure you want to clear the chat history?")) {
+      try {
+        await axios.get(`http://127.0.0.1:8000/api/v1/ai/clear?username=Ghostyy&password=Secure123`);
+        setMessages([]);
+      } catch (error) {
+        console.error('Error clearing chat:', error);
+      }
+    }
+  };
+
   return (
     <div className="bg-slate-900 min-h-screen flex items-center justify-center">
-      <div className="bg-slate-800 w-full max-w-[90%] h-3/4 p-4 rounded-lg shadow-lg flex flex-col">
+      <div className="bg-slate-800 w-full max-w-[90%] h-[90vh] p-4 rounded-lg shadow-lg flex flex-col">
         {/* Header Section */}
         <div className="w-full h-24 flex items-center justify-center bg-slate-950 rounded-lg shadow-lg mb-4">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-white">AI Assistant</h1>
-          </div>
+          <h1 className="text-4xl font-bold text-white">AI Assistant</h1>
         </div>
 
         {/* Chat Box Section */}
-        <div className="chat-box flex flex-col space-y-2 overflow-y-auto h-full">
+        <div ref={chatBoxRef} className="chat-box flex flex-col space-y-2 overflow-y-auto flex-grow p-2 border border-gray-700 rounded-lg">
           {messages.map((msg, index) => (
             <div key={index} className={`message flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`bubble ${msg.sender === 'user' ? 'bg-blue-600' : 'bg-gray-700'} p-3 rounded-lg max-w-[80%] text-white`}>
+              <div className={`bubble ${msg.sender === 'user' ? 'bg-blue-600' : 'bg-gray-700'} p-3 rounded-lg max-w-[80%] text-white`}> 
                 <ReactMarkdown>{msg.text}</ReactMarkdown>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Input Section */}
         <form onSubmit={sendMessage} className="flex mt-4">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className={`bg-gray-700 text-white p-2 rounded-lg flex-grow ${isProcessing ? 'border-2 border-red-500' : ''}`} // Add red border if processing
+            className={`bg-gray-700 text-white p-2 rounded-lg flex-grow ${isProcessing ? 'border-2 border-red-500' : ''}`}
             placeholder="Type your message..."
             disabled={isProcessing}
           />
@@ -90,7 +108,14 @@ const Assistant = () => {
             className={`text-white font-medium py-2 px-4 rounded-lg transition ml-2 ${isProcessing ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-500'}`}
             disabled={isProcessing}
           >
-            {isProcessing ? <ArrowPathIcon className="h-5 w-5 animate-spin" /> : 'Send'} {/* Use Heroicon when processing */}
+            {isProcessing ? <ArrowPathIcon className="h-5 w-5 animate-spin" /> : 'Send'}
+          </button>
+          <button
+            type="button"
+            onClick={clearChat}
+            className="text-white font-medium py-2 px-4 rounded-lg bg-red-600 hover:bg-red-500 ml-2"
+          >
+            🗑️
           </button>
         </form>
       </div>
