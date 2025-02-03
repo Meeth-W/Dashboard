@@ -1,110 +1,117 @@
-// TEMPORARY IMPLEMENTATION 
-// Until i actually figure out the backend and make this actually work bro :sob:
+import React, { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 
-import React, { useState } from 'react';
+function Notes() {
+  const [notes, setNotes] = useState([]);
+  const [selectedNote, setSelectedNote] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
 
-const Notes = () => {
-    const [notes, setNotes] = useState([
-        { id: 1, title: 'Note 1', content: 'This is the first note.' },
-        { id: 2, title: 'Note 2', content: 'This is the second note.' },
-        { id: 3, title: 'Note 3', content: 'This is the third note.' },
-    ]);
-    const [selectedNote, setSelectedNote] = useState(null);
-    const [editorContent, setEditorContent] = useState('');
-
-    const handleNoteClick = (note) => {
-        setSelectedNote(note);
-        setEditorContent(note.content);
-    };
-
-    const handleCreateNew = () => {
-        setSelectedNote(null);
-        setEditorContent('');
-    };
-
-    const handleSave = () => {
-        if (selectedNote) {
-            setNotes((prevNotes) =>
-                prevNotes.map((note) =>
-                    note.id === selectedNote.id ? { ...note, content: editorContent } : note
-                )
-            );
-        } else {
-            const newNote = {
-                id: notes.length + 1,
-                title: `Note ${notes.length + 1}`,
-                content: editorContent,
-            };
-            setNotes((prevNotes) => [...prevNotes, newNote]);
+  const fetchNotes = () => {
+    fetch("http://127.0.0.1:8000/api/v1/notes/fetch?username=Ghostyy&password=Secure123")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status) {
+          const notesArray = Object.entries(data.notes).map(([title, content]) => ({ title, content }));
+          setNotes(notesArray);
         }
-        setEditorContent('');
-        setSelectedNote(null);
-    };
+      });
+  };
 
-    const handleDelete = () => {
-        if (selectedNote) {
-            setNotes((prevNotes) => prevNotes.filter((note) => note.id !== selectedNote.id));
-            setEditorContent('');
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const handleSelectNote = (note) => {
+    setSelectedNote(note);
+    setContent(note.content);
+    setTitle(note.title);
+    setIsEditing(false);
+  };
+
+  const handleSave = () => {
+    fetch(`http://127.0.0.1:8000/api/v1/notes/add?username=Ghostyy&password=Secure123&title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`)
+      .then(() => {
+        fetchNotes();
+        setIsEditing(false);
+      });
+  };
+
+  const handleDelete = () => {
+    fetch(`http://127.0.0.1:8000/api/v1/notes/delete?username=Ghostyy&password=Secure123&title=${encodeURIComponent(title)}`)
+      .then(() => {
+        fetchNotes();
+        setSelectedNote(null);
+        setContent("");
+        setTitle("");
+      });
+  };
+
+  return (
+    <div className="flex h-screen bg-slate-900 text-white">
+      {/* Sidebar */}
+      <div className="w-1/4 bg-slate-800 p-4 overflow-y-auto">
+        <button
+          className="w-full p-2 bg-blue-600 hover:bg-blue-700 rounded-md mb-4"
+          onClick={() => {
             setSelectedNote(null);
-        }
-    };
-
-    return (
-        <div className="bg-slate-900 min-h-screen flex">
-            {/* Sidebar */}
-            <div className="bg-slate-800 w-1/4 p-4 overflow-y-auto">
-                <h2 className="text-2xl font-bold text-white mb-4">Notes</h2>
-                <button
-                    onClick={handleCreateNew}
-                    className="bg-blue-600 text-white py-2 px-4 rounded-lg mb-4 hover:bg-blue-500 transition"
-                >
-                    Create New
-                </button>
-                {notes.map((note) => (
-                    <div
-                        key={note.id}
-                        className={`bg-gray-700 p-3 rounded-lg mb-2 cursor-pointer hover:bg-gray-600 ${
-                            selectedNote && selectedNote.id === note.id ? 'bg-blue-500' : ''
-                        }`}
-                        onClick={() => handleNoteClick(note)}
-                    >
-                        <h3 className="text-white">{note.title}</h3>
-                    </div>
-                ))}
+            setIsEditing(true);
+            setTitle("");
+            setContent("");
+          }}
+        >
+          Create New
+        </button>
+        <div className="space-y-2">
+          {notes.map((note) => (
+            <div
+              key={note.title}
+              className={`p-2 cursor-pointer rounded-md transition duration-200 ${selectedNote?.title === note.title ? "bg-blue-700" : "bg-slate-700 hover:bg-slate-600"}`}
+              onClick={() => handleSelectNote(note)}
+            >
+              {note.title}
             </div>
-
-            {/* Main Content */}
-            <div className="bg-slate-800 w-3/4 p-4 flex flex-col">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold text-white">
-                        {selectedNote ? selectedNote.title : 'New note...'}
-                    </h2>
-                    <div className="flex space-x-2">
-                        <button
-                            onClick={handleSave}
-                            className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition"
-                        >
-                            {selectedNote ? 'Update' : 'Save'}
-                        </button>
-                        <button
-                            onClick={handleDelete}
-                            className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-500 transition"
-                        >
-                            Delete
-                        </button>
-                    </div>
-                </div>
-                <div className="flex-grow mb-4">
-                    <textarea
-                        className="bg-gray-700 text-white p-2 rounded-lg w-full h-full"
-                        value={editorContent}
-                        onChange={(e) => setEditorContent(e.target.value)}
-                        placeholder="Write your note here..."
-                    />
-                </div>
-            </div>
+          ))}
         </div>
-    );
-};
+      </div>
+
+      {/* Editor */}
+      <div className="w-3/4 p-6">
+        {selectedNote || isEditing ? (
+          <div>
+            {isEditing ? (
+              <input
+                className="w-full p-2 mb-2 bg-slate-700 border border-gray-500 rounded-md text-white"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Note Title"
+              />
+            ) : (
+              <h1 className="text-2xl font-bold">{title}</h1>
+            )}
+            {isEditing ? (
+              <textarea
+                className="w-full h-64 p-2 bg-slate-700 border border-gray-500 rounded-md text-white"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+            ) : (
+              <ReactMarkdown className="prose prose-invert max-w-none">{content}</ReactMarkdown>
+            )}
+            <div className="mt-4 space-x-2">
+              <button className="p-2 bg-green-600 hover:bg-green-700 rounded-md" onClick={() => (isEditing ? handleSave() : setIsEditing(true))}>
+                {isEditing ? "Save" : "Edit"}
+              </button>
+              <button className="p-2 bg-red-600 hover:bg-red-700 rounded-md" onClick={handleDelete}>Delete</button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-400">Select a note to view or create a new one.</p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default Notes;
