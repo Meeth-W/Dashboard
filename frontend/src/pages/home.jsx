@@ -14,7 +14,7 @@ const Home = () => {
             Created by: <a className="mt-4 inline-block text-blue-400 hover:underline" href='https://github.com/Meeth-W'>Ghostyy</a>
           </p>
           <div className="mt-6">
-            <a href="/contact" className="bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-500 transition">
+            <a href="/login" className="bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-500 transition">
               Log In
             </a>
           </div>

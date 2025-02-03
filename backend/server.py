@@ -38,6 +38,18 @@ def delete_account(username: str, password: str):
     return users.remove_user(username, password)
 # Test Script: http://127.0.0.1:8000/api/v1/delete_account?username=Ghostyy&password=Secure123
 
+@app.get('/api/v1/verify_account')
+def verify_account(username: str, password: str):
+    """
+    Verifies the user's account.
+    Args:
+        username (str): The username for the account.
+        password (str): The password for the account.
+    Returns:
+        dict: Status message indicating success or failure.
+    """
+    return users.verify(username, password)
+
 notes = Notes()
 @app.get('/api/v1/notes/add')
 def add_note(username: str, password: str, title: str, content: str):
