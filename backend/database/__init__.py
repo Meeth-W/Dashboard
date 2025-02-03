@@ -91,6 +91,21 @@ class Conversations:
 
         with open(self.file_path, 'w') as f: json.dump(data, f, indent=4)
         return {"status": "success", "message": "Dialogue added successfully"}
+    
+    def clear_history(self) -> Dict[str, str]:
+        """Clears the conversation history."""
+        with open(self.file_path, 'r') as f: data: dict = json.load(f)
+        if len(data["current"]) == 0: return {"status": "failed", "message": "Conversation history is already empty."}
+
+        to_archive = data["current"]
+        data["current"] = []
+
+        session_key = str(self.SESSION())
+        if session_key not in data["history"]: data["history"][session_key] = []
+        data["history"][session_key].extend([msg for msg in to_archive if msg not in data["history"][session_key]])
+        
+        with open(self.file_path, 'w') as f: json.dump(data, f, indent=4)
+        return {"status": "success", "message": f"Conversation history cleared and archived under session {session_key}."}
 
     def remove_dialogue(self, amount: int) -> bool:
         """

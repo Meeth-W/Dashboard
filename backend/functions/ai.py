@@ -63,4 +63,12 @@ class HandleRequests:
             return {"status": True, "response": response}
         except Exception as e:
             return {"status": False, "message": f"Error generating response: {str(e)}"}
-        
+    
+    def clear_history(self) -> dict:
+        """
+        Clears the conversation history of the user.
+
+        Returns:
+            dict: A status message indicating success or failure.
+        """
+        return self.conversations.clear_history()

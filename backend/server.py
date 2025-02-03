@@ -124,8 +124,26 @@ def get_history(username: str, password: str):
     if status["status"] == True:
         return handler.conversations.get_history()
     return status
-
 # Test Script: http://127.0.0.1:8000/api/v1/ai/get-history?username=Ghostyy&password=Secure123
+
+@app.get('/api/v1/ai/clear')
+def clear_history(username: str, password: str):
+    """
+    Clears the conversation history of the user.
+
+    Args:
+        username (str): The username of the user.
+        password (str): The user's password.
+
+    Returns:
+        dict: A status message indicating success or failure.
+    """
+    status = users.verify(username, password)
+    if status["status"] == True:
+        return handler.clear_history()
+    return status
+# Test Script: http://127.0.0.1:8000/api/v1/ai/clear?username=Ghostyy&password=Secure123
+
 
 origins = [
     "http://localhost:5173",  
