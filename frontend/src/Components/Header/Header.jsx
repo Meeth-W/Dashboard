@@ -28,6 +28,8 @@ function Header() {
     sessionStorage.removeItem("username");
     sessionStorage.removeItem("password");
     setUser({ username: "", password: "" });
+
+    window.location.href = "/";
   };
 
   const displayUserInfo = () => {
