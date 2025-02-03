@@ -53,9 +53,9 @@ def add_note(username: str, password: str, title: str, content: str):
     """
     status = users.verify(username, password)
     if status["status"] == True:
-        return notes.add_note(title, content)
+        return notes.add_note(content, title)
     return status
-# Test Script: http://
+# Test Script: http://127.0.0.1:8000/api/v1/notes/add?username=Ghostyy&password=Secure123&title=test&content=hi
 
 @app.get('/api/v1/notes/fetch')
 def get_notes(username: str, password: str):
@@ -71,7 +71,7 @@ def get_notes(username: str, password: str):
     if status["status"] == True:
         return notes.get_notes()
     return status
-# Test Script: http://
+# Test Script: http://127.0.0.1:8000/api/v1/notes/fetch?username=Ghostyy&password=Secure123
 
 @app.get('/api/v1/notes/delete')
 def delete_note(username: str, password: str, title: str):
@@ -88,7 +88,7 @@ def delete_note(username: str, password: str, title: str):
     if status["status"] == True:
         return notes.remove_note(title)
     return status
-# Test Script: http://
+# Test Script: http://127.0.0.1:8000/api/v1/notes/delete?username=Ghostyy&password=Secure123&title=hi
 
 
 handler = HandleRequests()
