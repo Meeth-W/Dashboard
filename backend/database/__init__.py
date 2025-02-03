@@ -140,3 +140,6 @@ class Notes:
         """Removes a note from the `notes.json` file."""
         with open(self.file_path, 'r') as f: notes: dict = json.load(f)
         if name not in notes["notes"]: return {"status": False, "message": "Note does not exist"}
+        del notes["notes"][name]
+        with open(self.file_path, 'w') as f: json.dump(notes, f, indent=4)
+        return {"status": True, "message": "Note removed successfully"}

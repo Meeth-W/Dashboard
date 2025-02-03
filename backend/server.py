@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from functions.ai import HandleRequests
-from database import Users
+from database import Users, Notes
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -37,6 +37,59 @@ def delete_account(username: str, password: str):
     """
     return users.remove_user(username, password)
 # Test Script: http://127.0.0.1:8000/api/v1/delete_account?username=Ghostyy&password=Secure123
+
+notes = Notes()
+@app.get('/api/v1/add_note')
+def add_note(username: str, password: str, title: str, content: str):
+    """
+    Adds a note to the user's account.
+    Args:
+        username (str): The username of the user.
+        password (str): The user's password.
+        title (str): The title of the note.
+        content (str): The content of the note.
+    Returns:
+        dict: A status message indicating success or failure.
+    """
+    status = users.verify(username, password)
+    if status["status"] == True:
+        return notes.add_note(title, content)
+    return status
+# Test Script: http://
+
+@app.get('/api/v1/get_notes')
+def get_notes(username: str, password: str):
+    """
+    Retrieves the notes of the user.
+    Args:
+        username (str): The username of the user.
+        password (str): The user's password.
+    Returns:
+        dict: A response containing the user's notes.
+    """
+    status = users.verify(username, password)
+    if status["status"] == True:
+        return notes.get_notes()
+    return status
+# Test Script: http://
+
+@app.get('/api/v1/delete_note')
+def delete_note(username: str, password: str, title: str):
+    """
+    Deletes a note from the user's account.
+    Args:
+        username (str): The username of the user.
+        password (str): The user's password.
+        title (str): The title of the note.
+    Returns:
+        dict: A status message indicating success or failure.
+    """
+    status = users.verify(username, password)
+    if status["status"] == True:
+        return notes.remove_note(title)
+    return status
+# Test Script: http://
+
 
 handler = HandleRequests()
 @app.get("/api/v1/ai/interact")
@@ -75,8 +128,8 @@ def get_history(username: str, password: str):
 # Test Script: http://127.0.0.1:8000/api/v1/ai/get-history?username=Ghostyy&password=Secure123
 
 origins = [
-    "http://localhost:5173",  # Your frontend URL
-    "http://127.0.0.1:5173",  # Another possible frontend URL
+    "http://localhost:5173",  
+    "http://127.0.0.1:5173", 
 ]
 app.add_middleware(
     CORSMiddleware,
