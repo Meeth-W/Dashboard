@@ -109,3 +109,34 @@ class Conversations:
 
         with open(self.file_path, 'w') as f: json.dump(data, f, indent=4)
         return {"status": "success", "content": to_archive, "message": f"{amount} messages purged successfully and archived under session {session_key}."}
+    
+
+class Notes:
+    """Handles the `data/notes.json` file."""
+    
+    def __init__(self) -> None:
+        self.path = os.path.join(os.path.dirname(__file__), 'data')
+        self.file_path = os.path.join(self.path, 'notes.json')
+
+        if not os.path.exists(self.path): os.makedirs(self.path)
+        if not os.path.exists(self.file_path):
+            with open(self.file_path, 'w') as f: json.dump({}, f, indent=4)
+        
+    def get_notes(self) -> Dict[str, List[str]]:
+        """Fetches the notes from the `notes.json` file."""
+        with open(self.file_path, 'r') as f: notes: dict = json.load(f)
+        
+        return {"status": True, "message": "User notes retrieved successfully", "notes": notes["notes"]}
+
+    def add_note(self, note: str, name: str) -> Dict[str, str]:
+        """Adds a note to the `notes.json` file."""
+        with open(self.file_path, 'r') as f: notes: dict = json.load(f)
+
+        notes["notes"][name] = note
+        with open(self.file_path, 'w') as f: json.dump(notes, f, indent=4)
+        return {"status": True, "message": "Note added successfully"}
+
+    def remove_note(self, name: str) -> Dict[str, str]:
+        """Removes a note from the `notes.json` file."""
+        with open(self.file_path, 'r') as f: notes: dict = json.load(f)
+        if name not in notes["notes"]: return {"status": False, "message": "Note does not exist"}
