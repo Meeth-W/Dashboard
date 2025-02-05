@@ -50,6 +50,18 @@ def verify_account(username: str, password: str):
     """
     return users.verify(username, password)
 
+@app.get('/api/v1/get_account')
+def get_account(username: str, password: str):
+    """
+    Retrieves the user's account details.
+    Args:
+        username (str): The username for the account.
+        password (str): The password for the account.
+    Returns:
+        dict: The user's account details.
+    """
+    return users.get_user(username, password)
+
 notes = Notes()
 @app.get('/api/v1/notes/add')
 def add_note(username: str, password: str, title: str, content: str):
