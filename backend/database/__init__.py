@@ -158,3 +158,57 @@ class Notes:
         del notes["notes"][name]
         with open(self.file_path, 'w') as f: json.dump(notes, f, indent=4)
         return {"status": True, "message": "Note removed successfully"}
+    
+class ResearchHistory:
+    """Handles storing and retrieving research queries and results."""
+    
+    def __init__(self) -> None:
+        self.path = os.path.join(os.path.dirname(__file__), 'data')
+        self.file_path = os.path.join(self.path, 'research_history.json')
+        
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+        
+        if not os.path.exists(self.file_path):
+            with open(self.file_path, 'w') as f:
+                json.dump({}, f, indent=4)
+    
+    def add_research_entry(self, username: str, query: str, results: List[str]) -> dict:
+        """Adds a research query and its results to the history."""
+        with open(self.file_path, 'r') as f:
+            history: dict = json.load(f)
+        
+        if username not in history:
+            history[username] = []
+        
+        history[username].append({"query": query, "results": results})
+        
+        with open(self.file_path, 'w') as f:
+            json.dump(history, f, indent=4)
+        
+        return {"status": True, "message": "Research entry added successfully"}
+    
+    def get_research_history(self, username: str) -> dict:
+        """Retrieves the research history for a given user."""
+        with open(self.file_path, 'r') as f:
+            history: dict = json.load(f)
+        
+        if username not in history:
+            return {"status": False, "message": "No research history found for this user."}
+        
+        return {"status": True, "message": "Research history retrieved successfully", "history": history[username]}
+    
+    def clear_research_history(self, username: str) -> dict:
+        """Clears the research history for a given user."""
+        with open(self.file_path, 'r') as f:
+            history: dict = json.load(f)
+        
+        if username not in history:
+            return {"status": False, "message": "No research history found to clear."}
+        
+        history[username] = []
+        
+        with open(self.file_path, 'w') as f:
+            json.dump(history, f, indent=4)
+        
+        return {"status": True, "message": "Research history cleared successfully"}
