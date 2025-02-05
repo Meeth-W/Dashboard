@@ -60,9 +60,9 @@ class HandleRequests:
             self.conversations.add_dialogue(user_data['data'].get("character_name", username), f"{message}")
             self.conversations.add_dialogue('AI', f"{response}")
 
-            return {"status": True, "response": response}
+            return {"status": True, "response": response, "model": MODEL_NAME}
         except Exception as e:
-            return {"status": False, "message": f"Error generating response: {str(e)}"}
+            return {"status": False, "message": f"Error generating response: {str(e)}", "model": MODEL_NAME}
     
     def clear_history(self) -> dict:
         """
