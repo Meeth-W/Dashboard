@@ -78,7 +78,7 @@ def add_note(username: str, password: str, title: str, content: str):
     """
     status = users.verify(username, password)
     if status["status"] == True:
-        return notes.add_note(content, title)
+        return notes.add_note(title, content)
     return status
 # Test Script: http://127.0.0.1:8000/api/v1/notes/add?username=Ghostyy&password=Secure123&title=test&content=hi
 
@@ -187,7 +187,7 @@ def scrape_website(username: str, password: str, url: str):
     return scraper.scrape_url(username, password, url)
 # Test Script: http://127.0.0.1:8000/api/v1/scrape?username=Ghostyy&password=Secure123&url=https://example.com
 
-@app.get('/api/v1/scrape/history')
+# @app.get('/api/v1/scrape/history')
 
 
 @app.get('/api/v1/scrape/keywords')

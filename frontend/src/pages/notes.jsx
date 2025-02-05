@@ -18,21 +18,21 @@ function Notes() {
     fetchNotes();
   }, [username, password]);
 
-  const fetchNotes = () => {
-    fetch(`http://127.0.0.1:8000/api/v1/notes/fetch?username=${username}&password=${password}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status) {
-          const notesArray = Object.entries(data.notes).map(([title, content]) => ({ title, content }));
-          setNotes(notesArray);
-        }
-      });
-  };
+const fetchNotes = () => {
+  fetch(`http://127.0.0.1:8000/api/v1/notes/fetch?username=${username}&password=${password}`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.status && Array.isArray(data.notes)) {
+        setNotes(data.notes);
+      }
+    })
+    .catch((error) => console.error("Error fetching notes:", error));
+};
 
   const handleSelectNote = (note) => {
     setSelectedNote(note);
-    setContent(note.content);
-    setTitle(note.title);
+    setContent(note.note);
+    setTitle(note.name);
     setIsEditing(false);
   };
 
@@ -83,11 +83,11 @@ function Notes() {
         <div className="space-y-2">
           {notes.map((note) => (
             <div
-              key={note.title}
-              className={`p-2 cursor-pointer rounded-md transition duration-200 ${selectedNote?.title === note.title ? "bg-blue-700" : "bg-slate-700 hover:bg-slate-600"}`}
+              key={note.name}
+              className={`p-2 cursor-pointer rounded-md transition duration-200 ${selectedNote?.name === note.name ? "bg-blue-700" : "bg-slate-700 hover:bg-slate-600"}`}
               onClick={() => handleSelectNote(note)}
             >
-              {note.title}
+              {note.name}
             </div>
           ))}
         </div>
