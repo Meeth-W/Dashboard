@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import { useNavigate } from "react-router-dom";
 
 function Notes() {
   const [notes, setNotes] = useState([]);
@@ -7,9 +8,18 @@ function Notes() {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+  const navigate = useNavigate();
+
+  const username = sessionStorage.getItem("username");
+  const password = sessionStorage.getItem("password");
+
+  useEffect(() => {
+    if (!username || !password) return;
+    fetchNotes();
+  }, [username, password]);
 
   const fetchNotes = () => {
-    fetch("http://127.0.0.1:8000/api/v1/notes/fetch?username=Ghostyy&password=Secure123")
+    fetch(`http://127.0.0.1:8000/api/v1/notes/fetch?username=${username}&password=${password}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status) {
@@ -19,10 +29,6 @@ function Notes() {
       });
   };
 
-  useEffect(() => {
-    fetchNotes();
-  }, []);
-
   const handleSelectNote = (note) => {
     setSelectedNote(note);
     setContent(note.content);
@@ -31,7 +37,7 @@ function Notes() {
   };
 
   const handleSave = () => {
-    fetch(`http://127.0.0.1:8000/api/v1/notes/add?username=Ghostyy&password=Secure123&title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`)
+    fetch(`http://127.0.0.1:8000/api/v1/notes/add?username=${username}&password=${password}&title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`)
       .then(() => {
         fetchNotes();
         setIsEditing(false);
@@ -39,7 +45,7 @@ function Notes() {
   };
 
   const handleDelete = () => {
-    fetch(`http://127.0.0.1:8000/api/v1/notes/delete?username=Ghostyy&password=Secure123&title=${encodeURIComponent(title)}`)
+    fetch(`http://127.0.0.1:8000/api/v1/notes/delete?username=${username}&password=${password}&title=${encodeURIComponent(title)}`)
       .then(() => {
         fetchNotes();
         setSelectedNote(null);
@@ -47,6 +53,17 @@ function Notes() {
         setTitle("");
       });
   };
+
+  if (!username || !password) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-900 text-white">
+        <div className="bg-slate-800 p-6 rounded-lg shadow-lg text-center">
+          <p className="text-2xl mb-4">You are not logged in!</p>
+          <button onClick={() => navigate("/")} className="p-2 bg-blue-600 hover:bg-blue-700 rounded-md">Go to Login</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-slate-900 text-white">
