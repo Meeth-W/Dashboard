@@ -56,7 +56,7 @@ class WebScraper:
 
         try:
             response = ollama.chat(
-                model = 'llama2-uncensored:7b',
+                model = 'deepseek-r1:14b',
                 messages = [{'role': 'user', 'content': 
                             f"Summarize the following content within 150 words: \n\n{data}"
                 }],

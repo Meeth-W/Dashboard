@@ -3,7 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 from database import Users, Conversations
 
-MODEL_NAME: str = 'llama3.1:8b'
+MODEL_NAME: str = 'deepseek-r1:14b'
 TEMPLATE: str = """
 You are an AI assistant. Your goal is to help the user with their tasks by providing accurate and helpful information. Please respond to the user's questions and requests to the best of your ability.
 
