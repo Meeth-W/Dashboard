@@ -1,4 +1,4 @@
-import requests
+import requests, ollama
 from bs4 import BeautifulSoup
 from database import Users, ResearchHistory
 
@@ -7,134 +7,62 @@ class WebScraper:
         self.users = Users()
         self.history = ResearchHistory()
 
-    def scrape_url(self, username: str, password: str, url: str) -> dict:
+    def scrape(self, username: str, password: str, url: str) -> dict:
         """
-        Scrapes the content of a web page after user authentication.
+        Scrapes the content of a webpage and stores the results in the user's research history.
 
         Args:
             username (str): The username of the user.
             password (str): The user's password.
-            url (str): The URL to scrape.
+            url (str): The URL of the webpage to scrape.
 
         Returns:
-            dict: The extracted text and links or an error message.
+            dict: A response containing the status of the scraping process.
         """
-        user_verification = self.users.verify(username, password)
-        if not user_verification['status']:
-            return user_verification
+        user_verification: dict = self.users.verify(username, password)
+        if not user_verification['status']: return user_verification
 
-        return self._fetch_page_content(url)
+        user_data: dict = self.users.get_user(username, password)
+        if not user_data['status']: return user_data
 
-    def scrape_with_keywords(self, username: str, password: str, url: str, keywords: list) -> dict:
-        """
-        Scrapes the content of a web page and filters it based on keywords.
-
-        Args:
-            username (str): The username of the user.
-            password (str): The user's password.
-            url (str): The URL to scrape.
-            keywords (list): Keywords to filter the content.
-
-        Returns:
-            dict: Filtered content based on the keywords.
-        """
-        user_verification = self.users.verify(username, password)
-        if not user_verification['status']:
-            return user_verification
-
-        scraped_data = self._fetch_page_content(url)
-        if not scraped_data["status"]:
-            return scraped_data
-
-        filtered_text = " ".join([word for word in scraped_data["text"].split() if any(kw.lower() in word.lower() for kw in keywords)])
-        
-        return {
-            "status": True,
-            "filtered_text": filtered_text if filtered_text else "No matching content found.",
-            "links": scraped_data["links"]
-        }
-
-    def scrape_multiple(self, username: str, password: str, urls: list) -> dict:
-        """
-        Scrapes multiple web pages.
-
-        Args:
-            username (str): The username of the user.
-            password (str): The user's password.
-            urls (list): List of URLs to scrape.
-
-        Returns:
-            dict: Extracted content and links from multiple pages.
-        """
-        user_verification = self.users.verify(username, password)
-        if not user_verification['status']:
-            return user_verification
-
-        results = {}
-        for url in urls:
-            results[url] = self._fetch_page_content(url)
-
-        return {"status": True, "results": results}
-
-    def _fetch_page_content(self, url: str) -> dict:
-        """
-        Helper method to fetch the content of a web page.
-
-        Args:
-            url (str): The URL of the web page.
-
-        Returns:
-            dict: The extracted text and links.
-        """
         try:
-            response = requests.get(url, timeout=5)
-            response.raise_for_status()
+            response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
+            content = soup.find_all('p')
+            content = ' '.join([c.text for c in content])
+            
+            return {"status": True, "message": "Webpage scraped successfully", "content": content}
+        except Exception as e:
+            return {"status": False, "message": f"An error occurred: {str(e)}", "content": None}
+    
 
-            text_content = " ".join([p.get_text() for p in soup.find_all('p')])
-            links = [a['href'] for a in soup.find_all('a', href=True)]
-
-            return {"status": True, "text": text_content, "links": links}
-        except requests.exceptions.RequestException as e:
-            return {"status": False, "message": str(e)}
-
-    def research_query(self, username: str, password: str, query: str) -> dict:
+    def summerize(self, username: str, password: str, url: str) -> dict:
         """
-        Conducts a research query and stores results.
-
+        Summarizes the content of a webpage and stores the results in the user's research history.
+        
         Args:
             username (str): The username of the user.
             password (str): The user's password.
-            query (str): The research query.
-
+            url (str): The URL of the webpage to summarize.
+        
         Returns:
-            dict: Search results or an error message.
+            dict: A response containing the status of the summarization process.
         """
-        user_verification = self.users.verify(username, password)
-        if not user_verification['status']:
-            return user_verification
+        data = self.scrape(username, password, url)['content']
+        if not data: return {"status": False, "message": "No content to summarize", "summary": None, "original": None}
 
-        search_url = f"https://www.google.com/search?q={query}"
-        search_results = self._fetch_page_content(search_url)
+        stored = self.history.get_site_data(url)
+        if stored['status']: return {"status": True, "message": "Found scraped data!", "summary": stored["data"]['summary'], "original": stored['data']['content']}
 
-        if search_results["status"]:
-            self.history.add_research_entry(username, query, search_results["text"])
+        try:
+            response = ollama.chat(
+                model = 'llama3.1:8b',
+                messages = [{'role': 'user', 'content': 
+                            f"Summarize the following content within 150 words: \n\n{data}"
+                }],
+            )
+            self.history.add_site(url, data, response["message"]["content"])
 
-        return search_results
-
-    def get_research_history(self, username: str, password: str) -> dict:
-        """
-        Retrieves the research history of the user.
-
-        Args:
-            username (str): The username of the user.
-            password (str): The user's password.
-
-        Returns:
-            dict: The research history data.
-        """
-        user_verification = self.users.verify(username, password)
-        if not user_verification['status']:
-            return user_verification
-
-        return self.history.get_research_history(username)
+            return {"status": True, "message": "Content summarized successfully", "summary": response["message"]["content"], "original": data}
+        except Exception as e:
+            return {"status": False, "message": f"An error occurred: {str(e)}", "summary": None, "original": None}

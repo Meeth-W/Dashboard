@@ -184,50 +184,9 @@ def scrape_website(username: str, password: str, url: str):
     Returns:
         dict: The scraped data or an error message.
     """
-    return scraper.scrape_url(username, password, url)
+    return scraper.summerize(username, password, url)
 # Test Script: http://127.0.0.1:8000/api/v1/scrape?username=Ghostyy&password=Secure123&url=https://example.com
 
-# @app.get('/api/v1/scrape/history')
-
-
-@app.get('/api/v1/scrape/keywords')
-def scrape_with_keywords(username: str, password: str, url: str, keywords: str):
-    """
-    Scrapes the given URL and filters the content based on keywords.
-
-    Args:
-        username (str): The username of the user.
-        password (str): The user's password.
-        url (str): The URL to scrape.
-        keywords (str): A comma-separated list of keywords.
-
-    Returns:
-        dict: The filtered scraped data or an error message.
-    """
-    keyword_list = keywords.split(",")
-    return scraper.scrape_with_keywords(username, password, url, keyword_list)
-# Test Script: http://127.0.0.1:8000/api/v1/scrape/keywords?username=Ghostyy&password=Secure123&url=https://example.com&keywords=AI,technology
-
-@app.post('/api/v1/scrape/multiple')
-def scrape_multiple(username: str, password: str, urls: list[str]):
-    """
-    Scrapes multiple URLs and returns the extracted content.
-
-    Args:
-        username (str): The username of the user.
-        password (str): The user's password.
-        urls (list[str]): A list of URLs to scrape.
-
-    Returns:
-        dict: The scraped data from multiple URLs or an error message.
-    """
-    return scraper.scrape_multiple(username, password, urls)
-# Test Script: Use a JSON body in a POST request:
-# {
-#     "username": "Ghostyy",
-#     "password": "Secure123",
-#     "urls": ["https://example1.com", "https://example2.com"]
-# }
 
 origins = [
     "http://localhost:5173",  
