@@ -1,6 +1,3 @@
-import os
-import json
-
 from pymongo import MongoClient
 from typing import List, Dict
 
@@ -75,8 +72,7 @@ class Notes(Database):
             return {"status": False, "message": "Note does not exist"}
         return {"status": True, "message": "Note removed successfully"}
 
-    
-# I migrated that shit 😱
+
 class ResearchHistory(Database):
     def __init__(self):
         super().__init__()
