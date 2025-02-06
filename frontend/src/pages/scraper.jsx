@@ -8,6 +8,7 @@ function Scraper() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showRaw, setShowRaw] = useState(false);
   const navigate = useNavigate();
 
   const username = sessionStorage.getItem("username");
@@ -33,6 +34,10 @@ function Scraper() {
 
   const handleScrape = () => {
     if (!url) return;
+    if (scrapes.includes(url)) {
+      setError("URL already scraped!");
+      return;
+    }
     setLoading(true);
     setError(null);
     fetch(`http://127.0.0.1:8000/api/v1/scrape?username=${username}&password=${password}&url=${encodeURIComponent(url)}`)
@@ -68,7 +73,8 @@ function Scraper() {
       .then((res) => res.json())
       .then((data) => {
         if (data.status) {
-          setSelectedScrape({ url: scrapeUrl, summary: data.summary });
+          setSelectedScrape({ url: scrapeUrl, summary: data.summary, content: data.original });
+          setShowRaw(false);
         } else {
           setError(data.message || "Failed to fetch scrape data.");
         }
@@ -113,11 +119,20 @@ function Scraper() {
         {selectedScrape ? (
           <div>
             <h1 className="text-2xl font-bold mb-4">{selectedScrape.url}</h1>
-            {/* <p className="text-gray-300 whitespace-pre-wrap">{selectedScrape.summary}</p> */}
-            <ReactMarkdown className="prose prose-invert max-w-none">{selectedScrape.summary}</ReactMarkdown>
-            <button className="mt-4 p-2 bg-red-600 hover:bg-red-700 rounded-md" onClick={() => handleDelete(selectedScrape.url)}>
-              Delete Scrape
-            </button>
+            <ReactMarkdown className="prose prose-invert max-w-none">
+              {showRaw ? selectedScrape.content : selectedScrape.summary}
+            </ReactMarkdown>
+            <div className="mt-4 flex space-x-2">
+              <button className="p-2 bg-red-600 hover:bg-red-700 rounded-md" onClick={() => handleDelete(selectedScrape.url)}>
+                Delete Scrape
+              </button>
+              <button
+                className="p-2 bg-gray-600 hover:bg-gray-700 rounded-md"
+                onClick={() => setShowRaw(!showRaw)}
+              >
+                {showRaw ? "Show Summary" : "Show Raw Data"}
+              </button>
+            </div>
           </div>
         ) : (
           <div>
