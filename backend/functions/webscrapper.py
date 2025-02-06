@@ -48,6 +48,7 @@ class WebScraper:
         Returns:
             dict: A response containing the status of the summarization process.
         """
+        print('request recieved...')
         data = self.scrape(username, password, url)['content']
         if not data: return {"status": False, "message": "No content to summarize", "summary": None, "original": None}
 
@@ -57,6 +58,7 @@ class WebScraper:
         try:
             response = ollama.chat(
                 model = 'deepseek-r1:14b',
+                # model = 'llama2-uncensored:7b'
                 messages = [{'role': 'user', 'content': 
                             f"Summarize the following content within 150 words: \n\n{data}"
                 }],

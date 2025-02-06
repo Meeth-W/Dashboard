@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
+
 import { useNavigate } from "react-router-dom";
 
 function Scraper() {
@@ -9,6 +11,7 @@ function Scraper() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showRaw, setShowRaw] = useState(false);
+  const [showThink, setShowThink] = useState(false);
   const navigate = useNavigate();
 
   const username = sessionStorage.getItem("username");
@@ -73,8 +76,11 @@ function Scraper() {
       .then((res) => res.json())
       .then((data) => {
         if (data.status) {
-          setSelectedScrape({ url: scrapeUrl, summary: data.summary, content: data.original });
+          const thinkText = data.summary.match(/<think>(.*?)<\/think>/s)?.[1] || "";
+          const summaryText = data.summary.replace(/<think>.*?<\/think>/s, "");
+          setSelectedScrape({ url: scrapeUrl, summary: summaryText, content: data.original, think: thinkText });
           setShowRaw(false);
+          setShowThink(false);
         } else {
           setError(data.message || "Failed to fetch scrape data.");
         }
@@ -95,56 +101,45 @@ function Scraper() {
 
   return (
     <div className="flex h-screen bg-slate-900 text-white">
-      {/* Sidebar */}
-      <div className="w-1/4 bg-slate-800 p-4 overflow-y-auto">
-        <button className="w-full p-2 bg-blue-600 hover:bg-blue-700 rounded-md mb-4" onClick={() => setSelectedScrape(null)}>
-          New Scrape
-        </button>
+      <div className="w-1/4 bg-slate-800 p-4 max-h-screen">
+        <button className="w-full p-2 bg-blue-600 hover:bg-blue-700 rounded-md mb-4" onClick={() => setSelectedScrape(null)}>New Scrape</button>
         <div className="space-y-2">
           {scrapes.map((scrapeUrl) => (
-            <div
-              key={scrapeUrl}
-              className={`p-2 cursor-pointer rounded-md transition duration-200 ${selectedScrape?.url === scrapeUrl ? "bg-blue-700" : "bg-slate-700 hover:bg-slate-600"}`}
+            <div 
+              key={scrapeUrl} 
+              className={`p-2 cursor-pointer rounded-md transition duration-200 ${selectedScrape?.url === scrapeUrl ? "bg-blue-700" : "bg-slate-700 hover:bg-slate-600"}`} 
               onClick={() => handleSelectScrape(scrapeUrl)}
             >
-              {scrapeUrl}
+              <span className="block truncate max-w-full">{scrapeUrl}</span>
             </div>
           ))}
         </div>
       </div>
-
-      {/* Main Content */}
-      <div className="w-3/4 p-6">
+      <div className="w-3/4 p-6 overflow-y-auto max-h-screen">
         {error && <div className="mb-4 p-2 bg-red-600 text-white rounded-md">{error}</div>}
         {selectedScrape ? (
           <div>
             <h1 className="text-2xl font-bold mb-4">{selectedScrape.url}</h1>
-            <ReactMarkdown className="prose prose-invert max-w-none">
-              {showRaw ? selectedScrape.content : selectedScrape.summary}
-            </ReactMarkdown>
+            {showThink && <div className="p-2 bg-gray-700 text-gray-300 rounded-md mb-2">{selectedScrape.think}</div>}
+            <ReactMarkdown className="prose prose-invert max-w-none">{showRaw ? selectedScrape.content : selectedScrape.summary}</ReactMarkdown>
             <div className="mt-4 flex space-x-2">
-              <button className="p-2 bg-red-600 hover:bg-red-700 rounded-md" onClick={() => handleDelete(selectedScrape.url)}>
-                Delete Scrape
-              </button>
-              <button
-                className="p-2 bg-gray-600 hover:bg-gray-700 rounded-md"
-                onClick={() => setShowRaw(!showRaw)}
-              >
-                {showRaw ? "Show Summary" : "Show Raw Data"}
-              </button>
+              <button className="p-2 bg-red-600 hover:bg-red-700 rounded-md" onClick={() => handleDelete(selectedScrape.url)}>Delete Scrape</button>
+              <button className="p-2 bg-gray-600 hover:bg-gray-700 rounded-md" onClick={() => setShowRaw(!showRaw)}>{showRaw ? "Show Summary" : "Show Raw Data"}</button>
+              <button className="p-2 bg-yellow-600 hover:bg-yellow-700 rounded-md" onClick={() => setShowThink(!showThink)}>💡</button>
             </div>
           </div>
         ) : (
           <div>
             <h1 className="text-2xl font-bold mb-4">Enter a URL to Scrape</h1>
             <input
-              className="w-full p-2 mb-4 bg-slate-700 border border-gray-500 rounded-md text-white"
+              className={`w-full p-2 mb-4 bg-slate-700 border rounded-md text-white ${loading? 'border-red-500': 'border-gray-500'} `}
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://example.com"
+              disabled={loading}
             />
-            <button className="p-2 bg-green-600 hover:bg-green-700 rounded-md" onClick={handleScrape} disabled={loading}>
-              {loading ? "Scraping..." : "Scrape Website"}
+            <button className={`p-2 rounded-md ${loading? 'bg-red-500': 'bg-green-600'}`} onClick={handleScrape} disabled={loading}>
+              {loading ? <ArrowPathIcon className="h-5 w-5 animate-spin mx-auto" /> : "Scrape Website"}
             </button>
           </div>
         )}
