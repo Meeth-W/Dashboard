@@ -8,6 +8,7 @@ import Profile from './pages/profile';
 import Assistant from './pages/assistant';
 import Notes from './pages/notes';
 import Login from './pages/login';
+import Scraper from './pages/scraper';
 
 function App() {
   const [user, setUser] = useState({
@@ -30,6 +31,7 @@ function App() {
           <Route path="assistant" element={<Assistant />} />
           <Route path="notes" element={<Notes />} />
           <Route path="login" element={<Login onLogin={handleLogin} />} />
+          <Route path="scraper" element={<Scraper />} />
         </Route>
       </Routes>
     </Router>

@@ -187,6 +187,40 @@ def scrape_website(username: str, password: str, url: str):
     return scraper.summerize(username, password, url)
 # Test Script: http://127.0.0.1:8000/api/v1/scrape?username=Ghostyy&password=Secure123&url=https://example.com
 
+@app.get('/api/v1/scrapes/fetch')
+def fetch_scrapes(username: str, password: str):
+    """
+    Retrieves the user's research history.
+
+    Args:
+        username (str): The username of the user.
+        password (str): The user's password.
+
+    Returns:
+        list: List of stroed sites.
+    """
+    status = users.verify(username, password)
+    if status["status"] == True:
+        return scraper.history.get_stored_sites()['sites']
+    return status
+
+@app.get('/api/v1/scrapes/delete')
+def delete_scrape(username: str, password: str, url: str):
+    """
+    Deletes a stored site from the user's research history.
+
+    Args:
+        username (str): The username of the user.
+        password (str): The user's password.
+        url (str): The URL of the site to delete.
+
+    Returns:
+        dict: A status message indicating success or failure.
+    """
+    status = users.verify(username, password)
+    if status["status"] == True:
+        return scraper.history.delete_site(url)
+    return status
 
 origins = [
     "http://localhost:5173",  

@@ -29,7 +29,7 @@ const features = [
     title: 'Web Scraper & Research Tool',
     description: 'Extract data, gather insights, and speed up your research with advanced web scraping.',
     icon: GlobeAltIcon,
-    link: '/'
+    link: '/scraper'
   },
   {
     title: 'Notes App',
