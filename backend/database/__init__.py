@@ -114,7 +114,7 @@ class Uploads:
         return {"message": "File uploaded successfully", "filename": filename}
 
     def get_files(self):
-        return os.listdir(self.path)
+        return [file for file in os.listdir(self.path) if file.lower() != "readme.md"]
 
     def delete_file(self, filename: str):
         file_path = os.path.join(self.path, filename)
