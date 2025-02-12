@@ -15,7 +15,7 @@ function QuickActions() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Upload Files */}
-        <div className="flex flex-col items-center bg-slate-700 p-4 rounded-lg shadow-md hover:bg-slate-600 transition duration-300 cursor-pointer">
+        <div className="flex flex-col items-center bg-slate-700 p-4 rounded-lg shadow-md hover:bg-slate-600 transition duration-300 cursor-pointer" onClick={() => handleRedirect('/files')}>
           <ArrowUpTrayIcon className="w-12 h-12 text-blue-400" />
           <p className="mt-2 text-lg">Upload Files</p>
         </div>

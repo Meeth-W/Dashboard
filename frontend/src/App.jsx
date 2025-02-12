@@ -9,6 +9,7 @@ import Assistant from './pages/assistant';
 import Notes from './pages/notes';
 import Login from './pages/login';
 import Scraper from './pages/scraper';
+import FileUpload from './pages/files';
 
 function App() {
   const [user, setUser] = useState({
@@ -32,6 +33,7 @@ function App() {
           <Route path="notes" element={<Notes />} />
           <Route path="login" element={<Login onLogin={handleLogin} />} />
           <Route path="scraper" element={<Scraper />} />
+          <Route path="files" element={<FileUpload user={user} />} />
         </Route>
       </Routes>
     </Router>
