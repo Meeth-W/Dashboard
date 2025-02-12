@@ -1,1 +1,1 @@
-## All uploaded files are stored here!
+## Files uploaded by the user are stored here!
