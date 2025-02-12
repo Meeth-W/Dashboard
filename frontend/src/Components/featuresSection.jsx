@@ -5,7 +5,7 @@ const features = [
     title: 'File Storage',
     description: 'Securely store and access your files from anywhere with seamless cloud integration.',
     icon: CloudArrowUpIcon,
-    link: '/'
+    link: '/files'
   },
   {
     title: 'AI Assistant',
