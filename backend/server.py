@@ -1,8 +1,11 @@
-from fastapi import FastAPI
-from functions.ai import HandleRequests
-from database import Users, Notes
+import os
+from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+
+from database import Users, Notes, Uploads
 from functions.webscrapper import WebScraper
+from functions.ai import HandleRequests
 
 app = FastAPI()
 
@@ -221,6 +224,31 @@ def delete_scrape(username: str, password: str, url: str):
     if status["status"] == True:
         return scraper.history.delete_site(url)
     return status
+
+storage = Uploads()
+@app.post("/api/v1/files/upload/")
+async def upload_file(file: UploadFile = File(...)):
+    try:
+        file_content = await file.read()
+        return storage.save_file(file_content, file.filename)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/files/download/{filename}")
+async def download_file(filename: str):
+    file_path = os.path.join(storage.path, filename)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(file_path, media_type="application/octet-stream", filename=filename)
+
+@app.delete("/api/v1/files/delete/{filename}")
+async def delete_file(filename: str):
+    return storage.delete_file(filename)
+
+@app.get("/api/v1/files/")
+async def list_files():
+    return {"files": storage.get_files()}
+
 
 origins = [
     "http://localhost:5173",  

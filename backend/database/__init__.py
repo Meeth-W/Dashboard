@@ -1,3 +1,4 @@
+import os
 from pymongo import MongoClient
 from typing import List, Dict
 
@@ -99,3 +100,27 @@ class ResearchHistory(Database):
         if result.deleted_count > 0:
             return {"status": True, "message": "Website data deleted successfully"}
         return {"status": False, "message": "Website not found"}
+    
+
+class Uploads:
+    def __init__(self):
+        self.path = os.path.join(os.getcwd(), "database/uploads")
+        os.makedirs(self.path, exist_ok=True)
+
+    def save_file(self, file, filename: str):
+        file_location = os.path.join(self.path, filename)
+        with open(file_location, "wb") as buffer:
+            buffer.write(file)
+        return {"message": "File uploaded successfully", "filename": filename}
+
+    def get_files(self):
+        return os.listdir(self.path)
+
+    def delete_file(self, filename: str):
+        file_path = os.path.join(self.path, filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            return {"message": "File deleted successfully"}
+        else:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="File not found")
