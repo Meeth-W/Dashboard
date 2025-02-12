@@ -2,3 +2,5 @@ fastapi
 uvicorn
 langchain
 langchain-ollama
+python-multipart
+aiofiles
